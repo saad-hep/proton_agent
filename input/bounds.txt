@@ -1,0 +1,42 @@
+# Optional proton-decay bounds and future sensitivities, in years.
+# Used ONLY when the user explicitly requests this file in chat.
+# Edit current and/or future values; omitted entries keep built-in defaults.
+# future: null means no projected sensitivity for that channel.
+# current values must be positive; do not rename channels or keys.
+{
+  "units": "years",
+  "channels": {
+    "p->pi0 e+": {
+      "current": 2.4e+34,
+      "future": 7.8e+34
+    },
+    "p->pi0 mu+": {
+      "current": 1.6e+34,
+      "future": 7.7e+34
+    },
+    "p->K0 e+": {
+      "current": 1.1e+33,
+      "future": null
+    },
+    "p->K0 mu+": {
+      "current": 3.6e+33,
+      "future": null
+    },
+    "p->eta e+": {
+      "current": 1.4e+34,
+      "future": 4.3e+34
+    },
+    "p->eta mu+": {
+      "current": 7.3e+33,
+      "future": 4.9e+34
+    },
+    "p->pi+ nu": {
+      "current": 3.9e+32,
+      "future": null
+    },
+    "p->K+ nu": {
+      "current": 6.6e+33,
+      "future": 3.2e+34
+    }
+  }
+}

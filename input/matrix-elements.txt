@@ -1,0 +1,42 @@
+# Optional hadronic matrix elements, in GeV^2. Signed real values.
+# This file is used ONLY when explicitly requested in chat.
+# Edit values in the section for your model; other sections are independent.
+# non_susy keys: meson and three-quark flavor ordering, matching the code.
+# susy_su5 keys: meson|quark_pair|third_quark|pair_chirality|third_chirality.
+# susy_so10 keys: channel-specific effective matrix elements of its formula.
+# Omitted entries retain the built-in defaults. Do not rename keys.
+{
+  "units": "GeV^2",
+  "non_susy": {
+    "pi0_udu": -0.131,
+    "K0_usu": 0.103,
+    "eta_udu": 0.006,
+    "piplus_udd": -0.186,
+    "Kplus_usd": -0.049,
+    "Kplus_uds": -0.134
+  },
+  "susy_su5": {
+    "pi0|ud|u|R|L": -0.131,
+    "pi0|ud|u|L|L": 0.134,
+    "pi+|ud|d|R|L": -0.186,
+    "pi+|ud|d|L|L": 0.189,
+    "K0|us|u|R|L": 0.103,
+    "K0|us|u|L|L": 0.057,
+    "K+|us|d|R|L": -0.049,
+    "K+|us|d|L|L": 0.041,
+    "K+|ud|s|R|L": -0.134,
+    "K+|ud|s|L|L": 0.139,
+    "K+|ds|u|R|L": -0.054,
+    "K+|ds|u|L|L": -0.098,
+    "eta|ud|u|R|L": 0.006,
+    "eta|ud|u|L|L": 0.113
+  },
+  "susy_so10": {
+    "p->pi+ nubar": 0.189,
+    "p->K+ nubar": 0.139,
+    "p->pi0 e+": 0.134,
+    "p->pi0 mu+": 0.134,
+    "p->K0 e+": 0.057,
+    "p->K0 mu+": 0.057
+  }
+}

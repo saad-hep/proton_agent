@@ -1,0 +1,16 @@
+# SUSY SU(5) benchmark matching main/run_susy_su5_formula.py.
+# M_half is expanded by the loader as M1=M_half, M2=2*M_half, M3=6*M_half.
+# Optional M1, M2, M3 entries independently override the corresponding mass (GeV).
+{
+    "schema": "susy_su5",
+    "m0": 3e3,
+    "AX": 0.0,
+    "tanbeta": 10.0,
+    "M_T": 2.44e18,
+    "mu": 1000.0,
+    "M_half": 2000.0,
+    # Eq. (81): P = diag(exp(i*phi13), exp(i*phi23), 1).
+    # Phases are periodic; scans/MCMC use 0 <= phi < 2*pi by default.
+    "phi13": 0.0,
+    "phi23": 0.0,
+}

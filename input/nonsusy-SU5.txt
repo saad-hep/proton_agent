@@ -1,0 +1,80 @@
+# non-SUSY SU(5) benchmark in the master56 CKM/PMNS reconstruction schema.
+# MGUT is in GeV; gGUT is dimensionless. All angles and phases are in radians.
+# UL and EL parameterize U and E; UR, DR, ER parameterize Uc, Dc, Ec.
+# The loader maps UR=conj(Uc), DR=conj(Dc), ER=conj(Ec) for the lifetime core.
+# Each matrix is P V Q, with V the CKM-like matrix (theta12, theta23, theta13, delta),
+# P=diag(exp(i*phi1), exp(i*phi2), exp(i*phi3)), Q=diag(exp(i*phi4), exp(i*phi5), 1).
+# D=U @ UCKM and N=E @ UPMNS; UCKM and UPMNS have the same P V Q form.
+# Fixed CKM (theta12, theta23, theta13, delta)=(0.227045, 0.0419423, 0.0037, 1.139).
+# Fixed PMNS (theta12, theta23, theta13)=(0.589202, 0.75538, 0.150535).
+# The 56 values below follow MASTER56_PARAMETER_ORDER in main/proton_agent_runtime.py.
+{
+    "schema": "master56",
+    "MGUT": 5.252731496508281e13,
+    "gGUT": 0.5576325595577221,
+    "values": [
+        # Independent matrix mixing angles.
+        0.7880974446334089,  # UL_theta12
+        1.5496675319687725,  # UL_theta23
+        0.4498058981669648,  # UL_theta13
+        1.2757529083865833,  # EL_theta12
+        0.062041138635847835,  # EL_theta23
+        0.3540242465100274,  # EL_theta13
+        0.20296420830528883,  # UR_theta12
+        1.3734050776245113,  # UR_theta23
+        1.1178284400858391,  # UR_theta13
+        0.002287357946548421,  # DR_theta12
+        0.0660282610219715,  # DR_theta23
+        1.209704493783609,  # DR_theta13
+        1.560686557777474,  # ER_theta12
+        0.22253380705228876,  # ER_theta23
+        0.2823566347820529,  # ER_theta13
+
+        # Independent matrix CP phases (delta) and diagonal phases (phi1...phi5).
+        0.14406107527514475,  # UL_delta
+        0.03898189110825265,  # UL_phi1
+        -1.2540925601773152,  # UL_phi2
+        3.091097631166357,  # UL_phi3
+        0.6645089941061748,  # UL_phi4
+        1.4167588263539403,  # UL_phi5
+        -2.4541122585093063,  # EL_delta
+        0.11810179918107883,  # EL_phi1
+        0.5355530144500197,  # EL_phi2
+        0.8201276972116981,  # EL_phi3
+        1.5445290948758272,  # EL_phi4
+        0.9240890522861971,  # EL_phi5
+        0.15012535086079776,  # UR_delta
+        0.011637841493424143,  # UR_phi1
+        1.7842668786779683,  # UR_phi2
+        3.04428801068217,  # UR_phi3
+        2.5852397149614457,  # UR_phi4
+        2.7757836117122556,  # UR_phi5
+        2.3602815256192224,  # DR_delta
+        1.5170613656735616,  # DR_phi1
+        -0.00006756877135447702,  # DR_phi2
+        0.5782518957362737,  # DR_phi3
+        2.5457531451648387,  # DR_phi4
+        1.8936941120483186,  # DR_phi5
+        0.8032931639143519,  # ER_delta
+        1.9733777729906623,  # ER_phi1
+        3.06375012418568,  # ER_phi2
+        1.361866473727361,  # ER_phi3
+        -0.3164473389652543,  # ER_phi4
+        2.4110126791509248,  # ER_phi5
+
+        # CKM diagonal phases; mixing angles and delta are fixed above.
+        1.849714408780281,  # UCKM_phi1
+        0.8482174483091193,  # UCKM_phi2
+        0.5592500393082823,  # UCKM_phi3
+        -0.5359689823899274,  # UCKM_phi4
+        2.929335654737823,  # UCKM_phi5
+
+        # PMNS CP phase and diagonal phases; mixing angles are fixed above.
+        0.5611831403740765,  # UPMNS_delta
+        1.4756653464988596,  # UPMNS_phi1
+        -0.4826073790266603,  # UPMNS_phi2
+        2.6151041311227163,  # UPMNS_phi3
+        2.3637140147351263,  # UPMNS_phi4
+        3.0995723853496804,  # UPMNS_phi5
+    ],
+}
