@@ -1,6 +1,6 @@
 # Proton Agent
 
-Proton-decay calculations, scans, and MCMC, and gauge-coupling running and plots,
+Gauge coupling unification, RGE (renormalization group equation running) coefficients, Proton-decay calculations, scans, and MCMC, and plots,
 available through the terminal or Open WebUI. Python 3.11 or later is required.
 
 From the downloaded repository, activate your Python environment and install:
