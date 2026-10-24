@@ -794,7 +794,7 @@ def _tool_cache_args(tool_name: str, args: dict) -> dict | None:
     }:
         # Older cached calls may omit loops while having run at the former
         # two-loop default, or lack the diagnostic/plot loop metadata.
-        cache_args["_rge_contract_version"] = 3 if tool_name == "analyze_sm_unification_effect" else 4
+        cache_args["_rge_contract_version"] = 4
         if tool_name in {"run_sm_gauge_rges", "run_nonsusy_gauge_rges", "run_susy_gauge_rges"}:
             cache_args.setdefault("loops", 1)
         if tool_name != "plot_rge_running":
@@ -8225,6 +8225,7 @@ def analyze_sm_unification_effect(
             "hypercharge": field["hypercharge"],
             "real_scalar": field.get("real_scalar"),
             "fermion_type": field.get("fermion_type"),
+            "generations": field["generations"],
             "one_loop_delta": field["one_loop_delta"],
             "s12": str(values[0] - values[1]),
             "s23": str(values[1] - values[2]),
@@ -9988,7 +9989,8 @@ def _repair_tool_args(name: str, args: dict, messages: list) -> dict:
     repaired = _repair_explicit_mcmc_args(name, repaired, messages)
     repaired = _repair_explicit_staged_rge_args(name, repaired, messages)
     if name == "run_sm_gauge_rges":
-        sm_spec = _explicit_single_sm_running_spec(_latest_human_text(messages))
+        sm_spec = (_explicit_single_sm_running_spec(_latest_human_text(messages))
+                   or _diagnosed_sm_running_spec(messages))
         if sm_spec is not None:
             repaired.update({"gut_scale": 1e16, "initial_scale": DEFAULT_MZ, **sm_spec,
                              **_rge_scale_overrides_from_messages(messages)})
@@ -10328,6 +10330,9 @@ def _domain_signal(text: str) -> str | None:
         r"pati[- ]salam|left[- ]right|unif(?:y|ies|ied|ication)|3221|3211|\b422\b|\b421\b)\b",
         lowered,
     ))
+    # A new scan request must not inherit an earlier RGE conversation branch.
+    if _explicit_scan_intent(text) and not rge:
+        return "proton"
     proton = bool(re.search(
         r"\b(?:proton decay|proton lifetime|partial lifetime|branching ratio|decay width|"
         r"p->|p→|fixed[- ]flavo[u]?r|mixing matrices?)\b",
@@ -10625,7 +10630,7 @@ def _rge_plot_request_error(args: dict, messages: list) -> str | None:
                 "Do not plot a previous model or use latest_rge as a substitute.")
     if current_run is not None and record.get("artifact_id") != current_run["artifact_id"]:
         return "The plot source differs from this turn's running result. Use its returned artifact_id."
-    spec = _explicit_single_sm_running_spec(question)
+    spec = _explicit_single_sm_running_spec(question) or _diagnosed_sm_running_spec(messages)
     if spec is not None:
         expected = spec["fields"][0]
         thresholds = run.get("thresholds", [])
@@ -10640,7 +10645,7 @@ def _rge_plot_request_error(args: dict, messages: list) -> str | None:
         same_reality = bool(actual.get("real_scalar", False)) == bool(expected.get("real_scalar", False))
         same_fermion = actual.get("fermion_type", "weyl") == expected.get("fermion_type", "weyl")
         if not (same_rep and same_mass and same_kind and same_reality and same_fermion
-                and int(actual.get("generations", 1)) == 1):
+                and int(actual.get("generations", 1)) == int(expected.get("generations", 1))):
             return "The saved multiplet, mass, or reality differs from the current request. Run the requested model."
         if run.get("loops") != spec["loops"]:
             return "The saved loop order differs from the current request. Run with the requested loop order."
@@ -10764,9 +10769,16 @@ def _sm_unification_effect_intent(question: str) -> bool:
     mentions_unification = bool(re.search(r"\b(?:unif(?:y|ies|ied|ication)|gut)\b", lowered))
     asks_effect = bool(re.search(
         r"\b(?:help|improv(?:e|ed|ement)|effect|impact|useful|good|bad|closer|worse|"
-        r"contribution|best|mass|scale|threshold|reside)\b", lowered
+        r"contribution|best|mass|scale|threshold|reside|sufficient|achieve)\b", lowered
     ))
-    return mentions_unification and asks_effect and not _rge_running_plot_intent(question)
+    asks_derived_mass = bool(re.search(
+        r"\b(?:derived|needed|required)\s+(?:(?:field|scalar|threshold)\s+)?mass\b|"
+        r"\b(?:find|determine|compute|calculate)\b[^.!?]{0,50}\bmass\b|"
+        r"\b(?:at\s+)?what\s+mass\b", lowered
+    ))
+    return mentions_unification and asks_effect and (
+        not _rge_running_plot_intent(question) or asks_derived_mass
+    )
 
 
 def _sm_unification_threshold_scale_intent(question: str) -> bool:
@@ -10803,6 +10815,28 @@ def _sm_unification_fallback_payload(messages: list) -> dict | None:
         return None
     result = analyze_sm_unification_effect.invoke({"fields": fields})
     return result if isinstance(result, dict) and not result.get("error") else None
+
+
+def _diagnosed_sm_running_spec(messages: list) -> dict | None:
+    """Carry this turn's physical threshold solution into its requested plot."""
+    question = _latest_human_text(messages)
+    if not (_sm_unification_effect_intent(question) and _rge_running_plot_intent(question)):
+        return None
+    start = max((i for i, message in enumerate(messages) if isinstance(message, HumanMessage)), default=-1) + 1
+    payload = _latest_named_tool_payload(messages, "analyze_sm_unification_effect", start)
+    if payload is None:
+        return None
+    solution = payload.get("single_field_threshold_solution")
+    effects = payload.get("field_effects", [])
+    if not solution or len(effects) != 1:
+        return None
+    field = {key: value for key, value in effects[0].items()
+             if key in {"name", "kind", "su3", "su2", "hypercharge", "real_scalar", "fermion_type", "generations"}
+             and value is not None}
+    field["mass"] = solution["field_mass_GeV"]
+    return {"fields": [field], "loops": _explicit_rge_loop_order(question) or 1,
+            "initial_scale": payload["initial_scale_GeV"],
+            **payload["initial_couplings"], **_rge_scale_overrides_from_messages(messages)}
 
 
 def _latest_rge_coefficient_payload(messages: list, start: int = 0) -> dict | None:
@@ -11031,6 +11065,9 @@ def _interpret_sm_unification_payload(target: dict, question: str, payload: dict
             "If required_weight_exceeds_light_limit, this field alone is insufficient even when light; "
             "raising its mass weakens its contribution and cannot restore unification. "
             "If no physical threshold solution exists, state that rather than inventing a mass. "
+            "If the request also includes a plot, explain the diagnostic only here; the running-and-plot "
+            "workflow supplies the actual artifact separately. Do not substitute a hypothetical sketch, "
+            "plotting instructions, or an offer to plot for that requested calculation. "
             "Answer briefly; do not dump JSON or propose additional work the user did not request. "
             + scale_note
             + "Do not refer to these instructions.\n\n"
@@ -11547,7 +11584,11 @@ def _run_routed_turn(
                 "SM-plus-threshold total S_23/S_12; never form a ratio from one field's contributions or "
                 "transpose it. For a requested scale, use single_field_threshold_solution rather than "
                 "performing the logarithmic inversion yourself. Do not judge unification by visual "
-                "closeness at an arbitrary endpoint. For a qualitative help question, answer in at most "
+                "closeness at an arbitrary endpoint. If the user also requests a plot at the derived mass, "
+                "first obtain the diagnostic, then call run_sm_gauge_rges with its exact field_mass_GeV "
+                "and plot_rge_running with the returned artifact_id. A null threshold solution means "
+                "there is no derived physical mass to plot; explain that without inventing one. "
+                "For a qualitative help question without a requested plot, answer in at most "
                 "three short sentences: direction, total ratio versus target, and sufficiency alone. "
                 "Do not show tables, JSON, internal flags, or unrequested proposals for new fields "
                 "or higher-loop effects.\n"
@@ -11814,6 +11855,9 @@ def _run_routed_turn(
                 "tool-grounded facts in the explanation. No unverified interpretation was returned."
             )
             return failure, all_messages + [AIMessage(content=failure)]
+        if (_rge_running_plot_intent(question)
+                and not unification_payload.get("single_field_threshold_solution")):
+            return answer, all_messages
 
     if domain == "rge" and _rge_running_plot_intent(question):
         plot_payload = _current_request_rge_plot_payload(all_messages, len(messages))
@@ -11864,7 +11908,7 @@ def _run_routed_turn(
             fallback_name, fallback_args = (
                 ("run_nonsusy_gauge_rges", fallback_spec) if fallback_spec is not None else
                 ("run_susy_gauge_rges", fallback_susy_spec) if fallback_susy_spec is not None else
-                ("run_sm_gauge_rges", explicit_sm_spec)
+                ("run_sm_gauge_rges", explicit_sm_spec or _diagnosed_sm_running_spec(all_messages))
             )
             try:
                 if run_payload is None and fallback_args is not None:
@@ -11894,10 +11938,12 @@ def _run_routed_turn(
                     ]
                     if not plot_payload.get("error") and _current_request_rge_plot_payload(all_messages, len(messages)) is not None:
                         quantity_label = "inverse gauge couplings" if plot_payload["quantity"] == "inverse_alpha" else "gauge couplings g_i"
-                        answer = (
+                        plot_confirmation = (
                             f"Plotted the {quantity_label} using {plot_payload.get('loops')}-loop running. "
                             f"Verified plot file: `{plot_payload['savefig']}`"
                         )
+                        answer = (answer.rstrip() + "\n\n" + plot_confirmation
+                                  if unification_effect_intent else plot_confirmation)
                         all_messages += [AIMessage(content=answer)]
                         print("[RGE GUARDRAIL] Completed verified run-and-plot tools after declined tool calls.")
                     else:
@@ -11913,6 +11959,9 @@ def _run_routed_turn(
                 if detail:
                     failure += f" Tool error: {detail}"
                 return failure, all_messages + [AIMessage(content=failure)]
+        if unification_effect_intent:
+            answer = _repair_answer_plot_filepath(answer, plot_payload)
+            all_messages += [AIMessage(content=answer)]
 
     if (
         domain == "proton"
