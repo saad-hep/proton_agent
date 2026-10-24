@@ -41,3 +41,17 @@ used only when explicitly requested for the computation. When using installed
 benchmark examples outside the checkout, the four packaged benchmarks are
 available as fallback inputs; custom files are read from the user's filesystem.
 
+# Citation
+
+If you use proton_agent in your research or reference the LLM-assisted workflow, please cite the accompanying paper: [https://arxiv.org/abs/2610.xxxxx](https://arxiv.org/abs/2610.xxxxx)
+```
+@article{Saad:2026xxx,
+    author = "Saad, Shaikh",
+    title = "{A Tool-Grounded AI Agent for Gauge Coupling Unification and Proton Decay}",
+    eprint = "2610.xxxxx",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-ph",
+    month = "10",
+    year = "2026"
+}
+```
