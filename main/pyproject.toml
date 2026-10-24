@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proton-agent"
+version = "0.1.0"
+description = "Local/remote LLM agent for proton decay and RGE calculations."
+requires-python = ">=3.11"
+dependencies = [
+    "httpx",
+    "joblib",
+    "langchain-core",
+    "langchain-ollama",
+    "langgraph",
+    "matplotlib",
+    "numpy",
+    "ollama",
+    "openai",
+    "pandas",
+    "scipy",
+    "tables",
+]
+
+[project.scripts]
+proton_agent = "proton_agent:main"
+proton_agent_server = "proton_agent_server:main"
+
+[tool.setuptools]
+packages = ["proton_agent_resources"]
+py-modules = [
+    "runtime_paths",
+    "hadronic_inputs",
+    "bounds",
+    "experimental_ratios",
+    "nonsusy_su5_formula",
+    "nonsusy_so10_formula",
+    "extended_rge_coefficients",
+    "extended_rge_runner",
+    "mssm_coefficients",
+    "mssm_rge_runner",
+    "parameters",
+    "proton_agent",
+    "proton_agent_runtime",
+    "proton_agent_server",
+    "rge_coefficients",
+    "rge_runner",
+    "scan_runner",
+    "susy_so10_formula",
+    "susy_su5_formula",
+]

@@ -1,0 +1,3 @@
+include system_prompt.txt
+recursive-include prompts *.txt
+recursive-include proton_agent_resources *.txt
