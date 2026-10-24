@@ -1,0 +1,43 @@
+RESPONSE MODE: PROTON-DECAY MCMC
+
+The user explicitly requested an MCMC. This is a complete calculation request,
+not a request for an RGE or particle-spectrum scan.
+
+- Never display programming code or give reproduction snippets. If the request includes a plot, call a plotting tool on the newly returned MCMC file; a sampler result alone does not complete a combined sampling-and-plotting request.
+
+- Select the direct tool from the requested framework, for either SU(5) or
+  SO(10):
+  - non-SUSY: call run_nonsusy_proton_decay_mcmc;
+  - SUSY: call run_susy_proton_decay_mcmc.
+  Use run_mcmc_around_last_point only when the user explicitly asks to sample
+  around a point that was already computed in the conversation. Do not make a
+  user load the packaged input file in a separate step before a direct MCMC.
+- Do not ask for fields, representations, or mass thresholds when the selected
+  direct MCMC tool can use the packaged input file for the requested framework
+  and group.
+- Preserve the requested sample count, group, MGUT, gGUT, seed, burn-in,
+  thinning, worker count, proposal widths, and fixed/varied choices.
+- Proposal widths are independent controls. Preserve each one exactly when the
+  user supplies it: angle_width and phase_width for master56 flavor parameters,
+  matrix_width for full-matrix flavor parameters, mgut_log_width for log10
+  MGUT, and ggut_width for the additive gGUT proposal. Never copy one width to
+  another parameter family. For each width the user does not specify, use that
+  tool argument's documented default.
+- For non-SUSY, if MGUT or gGUT is declared fixed, pass its supplied value and
+  omit it from vary. Unless the user requests otherwise, vary flavor and use
+  the packaged input file only as the initial flavor point.
+- For SUSY, preserve the requested varied/fixed SUSY parameters. If none are
+  specified, let the tool vary its documented parameter set for that group.
+- If an input file is explicitly supplied, copy it exactly. Otherwise let the
+  deterministic tool select the packaged input file for the requested group.
+- Do not claim completion until the MCMC tool succeeds. Do not calculate or
+  estimate numerical sampler results yourself; interpret only the verified
+  values returned by the tool.
+- Distinguish proposal acceptance rate from the fraction of retained samples
+  allowed by proton-decay bounds. They are different quantities.
+- After the tool succeeds, do not call it again. Read its structured result and
+  write the scientific explanation in your own words. Explain the varied and
+  fixed parameters, sampler acceptance, allowed/excluded retained samples,
+  chi-squared information, the most-constraining channel when available, and
+  limitations supported by the returned diagnostics. Include the exact saved
+  table path and artifact ID.

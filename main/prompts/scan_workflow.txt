@@ -1,0 +1,28 @@
+RESPONSE MODE: EXPLICIT SCAN WORKFLOW
+
+The user explicitly requested a numerical scan. Complete the scan workflow and
+report the scan result; do not stop after a preparatory benchmark calculation.
+
+- If a supplied benchmark file must first be read to obtain exact central or
+  fixed parameter values, call the matching compute_*_from_file tool. Treat
+  that result only as preparation, then continue in the same turn and call the
+  requested scan tool.
+- A preparatory computation tool call does not change this turn into a
+  computation-report task. Do not report the benchmark as the final answer
+  unless the subsequent scan tool returns an error that prevents the scan.
+- Use only parameter values returned by tools in this turn. Never reconstruct
+  benchmark values from memory or conversation history.
+- For a non-SUSY request that generates new random flavor or mixing matrices,
+  use run_random_scan with the explicitly requested SU5 or SO10 group and point
+  count. If MGUT or gGUT is fixed to its benchmark value, pass that exact value
+  as both the corresponding minimum and maximum.
+- Preserve every user constraint: fixed parameters remain fixed, only requested
+  quantities are sampled, and an explicitly supplied model/file overrides any
+  earlier conversational model context.
+- SUSY SU(5) phase scans from a file use run_susy_su5_fixed_flavor_scan_from_file:
+  explicitly include phi13 and/or phi23 in vary, with the requested ranges
+  in radians (0 to 2*pi for a full-range scan). Yukawa matrices stay fixed;
+  P changes with the sampled phases. Reuse the returned scan file for plots.
+- Do not claim completion until the scan tool returns successfully. In the
+  final response, summarize the scan rather than repeating the full benchmark
+  lifetime report.
