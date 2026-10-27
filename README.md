@@ -43,7 +43,7 @@ available as fallback inputs; custom files are read from the user's filesystem.
 
 # Citation
 
-If you use proton_agent in your research or reference the LLM-assisted workflow, please cite the accompanying paper: [https://arxiv.org/abs/2610.xxxxx](https://arxiv.org/abs/2610.33593)
+If you use proton_agent in your research or reference the LLM-assisted workflow, please cite the accompanying paper: [https://arxiv.org/abs/2610.33593](https://arxiv.org/abs/2610.33593)
 ```
 @article{Saad:2026qmz,
     author = "Saad, Shaikh",
