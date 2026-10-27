@@ -43,12 +43,12 @@ available as fallback inputs; custom files are read from the user's filesystem.
 
 # Citation
 
-If you use proton_agent in your research or reference the LLM-assisted workflow, please cite the accompanying paper: [https://arxiv.org/abs/2610.xxxxx](https://arxiv.org/abs/2610.xxxxx)
+If you use proton_agent in your research or reference the LLM-assisted workflow, please cite the accompanying paper: [https://arxiv.org/abs/2610.xxxxx](https://arxiv.org/abs/2610.33593)
 ```
-@article{Saad:2026xxx,
+@article{Saad:2026qmz,
     author = "Saad, Shaikh",
     title = "{A Tool-Grounded AI Agent for Gauge Coupling Unification and Proton Decay}",
-    eprint = "2610.xxxxx",
+    eprint = "2610.33593",
     archivePrefix = "arXiv",
     primaryClass = "hep-ph",
     month = "10",
